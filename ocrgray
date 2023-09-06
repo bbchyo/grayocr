@@ -1,0 +1,36 @@
+import cv2
+import os
+import matplotlib.pyplot as plt
+
+# Giriş ve çıkış dosya yollarını tanımlama
+input_dir = '/content/drive/MyDrive'
+output_dir = '/content/drive/MyDrive/'
+
+# Çıkış klasörünü oluşturma (eğer yoksa)
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+
+# Giriş klasöründeki tüm dosyaları listeleme
+image_files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
+
+for image_file in image_files:
+    img_path = os.path.join(input_dir, image_file)
+    img = cv2.imread(img_path, cv2.IMREAD_COLOR)
+
+    # Resmi gri tonlamaya dönüştürme
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # Gürültüyü azaltma
+    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+
+    # Canny kenar dedektörü ile kenar tespiti
+    edges = cv2.Canny(blurred, 50, 150)
+
+    # İşlenmiş resmi çıkış klasörüne kaydetme
+    output_path = os.path.join(output_dir, image_file)
+    cv2.imwrite(output_path, edges)
+
+    # Kenarları gri zeminde göster
+    plt.imshow(edges, cmap='gray')
+    plt.axis('off')
+    plt.show()
